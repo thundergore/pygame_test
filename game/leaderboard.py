@@ -1,7 +1,7 @@
 # game/leaderboard.py
 
-import os
 import json
+import os
 
 LEADERBOARD_FILE = "leaderboard.json"
 
@@ -27,17 +27,17 @@ def update_leaderboard(name, new_score):
     save_leaderboard(leaderboard)
 
 def display_leaderboard(screen, font):
-    leaderboard = load_leaderboard()
     screen.fill((0, 0, 0))
     title_surface = font.render("Leaderboard", True, (255, 255, 255))
     screen.blit(
         title_surface,
-        (screen.get_width() // 2 - title_surface.get_width() // 2, 50),
+        (1920 // 2 - title_surface.get_width() // 2, 50),
     )
+    leaderboard = load_leaderboard()
     for i, entry in enumerate(leaderboard[:20]):
         score_surface = font.render(f"{i+1}. {entry['name']} - {entry['score']}", True, (255, 255, 255))
         screen.blit(
             score_surface,
-            (screen.get_width() // 2 - score_surface.get_width() // 2, 100 + i * 30),
+            (1920 // 2 - score_surface.get_width() // 2, 100 + i * 30),
         )
     pygame.display.flip()
