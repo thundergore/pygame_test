@@ -340,7 +340,7 @@ def draw(y_offset):
         animated_texture = animate_powerup(powerup)
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
         powerup_letter = POWERUP_LETTERS[powerup["type"]]
-        powerup_letter_surface = powerup_font.render(powerup_letter, True, BLACK)
+        powerup_letter_surface = powerup_font.render(powerup_letter, True, CYAN)
         screen.blit(powerup_letter_surface, powerup["rect"].topleft)
     draw_stored_powerups(y_offset + 60)
     draw_net()
@@ -367,7 +367,7 @@ def draw_game_elements(y_offset):
         animated_texture = animate_powerup(powerup)
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
         powerup_letter = POWERUP_LETTERS[powerup["type"]]
-        powerup_letter_surface = powerup_font.render(powerup_letter, True, BLACK)
+        powerup_letter_surface = powerup_font.render(powerup_letter, True, CYAN)
         screen.blit(powerup_letter_surface, powerup["rect"].topleft)
     draw_stored_powerups(y_offset + 60)
     draw_net()
@@ -619,6 +619,8 @@ while running:
     elif not game_over and not paused:
         if control_method == "mouse":
             move_paddle_mouse()
+        else:
+            move_paddle_scroll(0)  # Ensure the scroll method is used if not mouse
         move_balls()
         move_powerups()
         if lives <= 0:
