@@ -293,9 +293,10 @@ def slowdown_powerup():
     pygame.time.set_timer(pygame.USEREVENT, 10000)  # Reset after 10 seconds
 
 def bouncewall_powerup():
-    global PADDLE_HEIGHT, paddle, bouncewall_timer, powerup_active
-    PADDLE_HEIGHT = HEIGHT
-    paddle = pygame.Rect(paddle.x, 0, PADDLE_WIDTH, HEIGHT)
+    global PADDLE_HEIGHT, paddle, bouncewall_timer, powerup_active, paddle_texture
+    PADDLE_HEIGHT *= 3
+    paddle.height = PADDLE_HEIGHT
+    paddle_texture = create_paddle_texture(PADDLE_WIDTH, PADDLE_HEIGHT)
     bouncewall_timer = 10  # 10 seconds
     powerup_active = "Bouncewall"
     pygame.time.set_timer(pygame.USEREVENT + 1, 10000)  # Reset after 10 seconds
@@ -308,9 +309,10 @@ def reset_speeds():
     powerup_active = None
 
 def reset_paddle():
-    global PADDLE_HEIGHT, paddle, powerup_active
+    global PADDLE_HEIGHT, paddle, powerup_active, paddle_texture
     PADDLE_HEIGHT = 180
     paddle.height = PADDLE_HEIGHT
+    paddle_texture = create_paddle_texture(PADDLE_WIDTH, PADDLE_HEIGHT)
     paddle.y = HEIGHT // 2 - PADDLE_HEIGHT // 2
     powerup_active = None
 
@@ -565,6 +567,7 @@ while running:
             reset_paddle()
     
     if paused:
+        pause_screen()
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_y:
@@ -573,6 +576,7 @@ while running:
                 elif event.key == pygame.K_n:
                     paused = False
                     pygame.event.set_grab(True)
+                    pygame.mouse.set_visible(False)
 
     if game_over and not name_captured:
         state = game_over_screen()
@@ -593,7 +597,10 @@ while running:
                             stored_powerups.clear()
                             add_ball()
                             pygame.event.set_grab(True)
+                            pygame.mouse.set_visible(False)
                             break
+                if not game_over:
+                    break
     elif not game_over and not paused:
         if control_method == "mouse":
             move_paddle_mouse()
