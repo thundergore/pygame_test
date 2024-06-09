@@ -32,6 +32,7 @@ pygame.display.set_caption("Kian's Powerful, Deadly Pong!")
 font = pygame.font.Font(pygame.font.get_default_font(), 32)  # Larger font and size
 game_over_font = pygame.font.Font(pygame.font.get_default_font(), 144)  # Larger font for game over text
 pause_font = pygame.font.Font(pygame.font.get_default_font(), 72)  # Font for pause message
+explosion_font = pygame.font.Font(pygame.font.get_default_font(), 48)  # Font for explosion text
 
 # ASCII Art for the name "Kian"
 ascii_kian = """
@@ -55,7 +56,7 @@ pygame.mixer.music.play(-1)  # Loop the music indefinitely
 LEADERBOARD_FILE = "leaderboard.json"
 
 # Power-up types
-POWERUPS = ["Rocket", "Explosion", "Double Ball", "Slowdown", "Bouncewall"]
+POWERUPS = ["Laser", "Explosion", "Double Ball", "Slowdown", "Bouncewall"]
 
 # Create paddle texture
 def create_paddle_texture(width, height):
@@ -217,8 +218,8 @@ def claim_powerup(mouse_pos):
 def use_powerup():
     if stored_powerups:
         active_powerup = stored_powerups.pop(0)
-        if active_powerup == "Rocket":
-            rocket_powerup()
+        if active_powerup == "Laser":
+            laser_powerup()
         elif active_powerup == "Explosion":
             explosion_powerup()
         elif active_powerup == "Double Ball":
@@ -228,7 +229,7 @@ def use_powerup():
         elif active_powerup == "Bouncewall":
             bouncewall_powerup()
 
-def rocket_powerup():
+def laser_powerup():
     global balls, score
     laser_sound.play()
     beam_height = 20
@@ -246,7 +247,20 @@ def rocket_powerup():
     for ball in balls[:]:
         if paddle.top <= ball["rect"].centery <= paddle.bottom:
             score += 1
+            ball_pos = ball["rect"].topleft
             balls.remove(ball)
+            draw_explosion(ball_pos)
+
+def draw_explosion(pos):
+    explosion_text = "BOOM!"
+    for _ in range(10):  # Display explosion for a short duration
+        screen.fill(BLACK)
+        y_offset = render_ascii_art()
+        draw_game_elements(y_offset)
+        explosion_surface = explosion_font.render(explosion_text, True, random.choice([RED, YELLOW]))
+        screen.blit(explosion_surface, pos)
+        pygame.display.flip()
+        pygame.time.delay(100)
 
 def explosion_powerup():
     global balls, score
