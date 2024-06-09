@@ -4,6 +4,7 @@ import pygame
 import random
 from game.powerups import spawn_powerup, animate_powerup, POWERUP_LETTERS
 from game.sound import play_sound
+from assets.load_assets import create_paddle_texture
 
 def add_ball(balls, width, height, ball_radius):
     ball_speed_x, ball_speed_y = 14, 14
