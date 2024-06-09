@@ -12,7 +12,7 @@ pygame.mixer.init()
 WIDTH, HEIGHT = 1920, 1080
 PADDLE_WIDTH, PADDLE_HEIGHT = 30, 180
 BALL_RADIUS = 14
-POWERUP_SIZE = 30
+POWERUP_SIZE = 50
 NET_SIZE = 40
 # Colors
 WHITE = (255, 255, 255)
@@ -340,8 +340,12 @@ def draw(y_offset):
         animated_texture = animate_powerup(powerup)
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
         powerup_letter = POWERUP_LETTERS[powerup["type"]]
-        powerup_letter_surface = powerup_font.render(powerup_letter, True, CYAN)
-        screen.blit(powerup_letter_surface, powerup["rect"].topleft)
+        powerup_letter_surface = powerup_font.render(powerup_letter, True, BLACK)
+        
+        # Center the letter on the power-up rectangle
+        letter_x = powerup["rect"].x + (POWERUP_SIZE - powerup_letter_surface.get_width()) // 2
+        letter_y = powerup["rect"].y + (POWERUP_SIZE - powerup_letter_surface.get_height()) // 2
+        screen.blit(powerup_letter_surface, (letter_x, letter_y))
     draw_stored_powerups(y_offset + 60)
     draw_net()
     if powerup_active:
@@ -367,8 +371,12 @@ def draw_game_elements(y_offset):
         animated_texture = animate_powerup(powerup)
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
         powerup_letter = POWERUP_LETTERS[powerup["type"]]
-        powerup_letter_surface = powerup_font.render(powerup_letter, True, CYAN)
-        screen.blit(powerup_letter_surface, powerup["rect"].topleft)
+        powerup_letter_surface = powerup_font.render(powerup_letter, True, BLACK)
+        
+        # Center the letter on the power-up rectangle
+        letter_x = powerup["rect"].x + (POWERUP_SIZE - powerup_letter_surface.get_width()) // 2
+        letter_y = powerup["rect"].y + (POWERUP_SIZE - powerup_letter_surface.get_height()) // 2
+        screen.blit(powerup_letter_surface, (letter_x, letter_y))
     draw_stored_powerups(y_offset + 60)
     draw_net()
 
