@@ -33,6 +33,7 @@ font = pygame.font.Font(pygame.font.get_default_font(), 32)  # Larger font and s
 game_over_font = pygame.font.Font(pygame.font.get_default_font(), 144)  # Larger font for game over text
 pause_font = pygame.font.Font(pygame.font.get_default_font(), 72)  # Font for pause message
 explosion_font = pygame.font.Font(pygame.font.get_default_font(), 48)  # Font for explosion text
+powerup_font = pygame.font.Font(pygame.font.get_default_font(), 48)  # Font for power-up text
 
 # ASCII Art for the name "Kian"
 ascii_kian = """
@@ -57,6 +58,13 @@ LEADERBOARD_FILE = "leaderboard.json"
 
 # Power-up types
 POWERUPS = ["Laser", "Explosion", "Double Ball", "Slowdown", "Bouncewall"]
+POWERUP_LETTERS = {
+    "Laser": "L",
+    "Explosion": "E",
+    "Double Ball": "D",
+    "Slowdown": "S",
+    "Bouncewall": "B"
+}
 
 # Create paddle texture
 def create_paddle_texture(width, height):
@@ -331,6 +339,9 @@ def draw(y_offset):
     for powerup in powerups:
         animated_texture = animate_powerup(powerup)
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
+        powerup_letter = POWERUP_LETTERS[powerup["type"]]
+        powerup_letter_surface = powerup_font.render(powerup_letter, True, BLACK)
+        screen.blit(powerup_letter_surface, powerup["rect"].topleft)
     draw_stored_powerups(y_offset + 60)
     draw_net()
     if powerup_active:
@@ -355,6 +366,9 @@ def draw_game_elements(y_offset):
     for powerup in powerups:
         animated_texture = animate_powerup(powerup)
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
+        powerup_letter = POWERUP_LETTERS[powerup["type"]]
+        powerup_letter_surface = powerup_font.render(powerup_letter, True, BLACK)
+        screen.blit(powerup_letter_surface, powerup["rect"].topleft)
     draw_stored_powerups(y_offset + 60)
     draw_net()
 
@@ -568,15 +582,16 @@ while running:
     
     if paused:
         pause_screen()
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_y:
-                    pygame.quit()
-                    sys.exit()
-                elif event.key == pygame.K_n:
-                    paused = False
-                    pygame.event.set_grab(True)
-                    pygame.mouse.set_visible(False)
+        while paused:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.key == pygame.K_n:
+                        paused = False
+                        pygame.event.set_grab(True)
+                        pygame.mouse.set_visible(False)
 
     if game_over and not name_captured:
         state = game_over_screen()
