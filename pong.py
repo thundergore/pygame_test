@@ -47,7 +47,7 @@ explosion_sound = pygame.mixer.Sound("sound/explosion_sound.wav")
 laser_sound = pygame.mixer.Sound("sound/laser_sound.wav")
 
 # Load background music
-pygame.mixer.music.load("background_music.wav")
+pygame.mixer.music.load("sound/background_music.wav")
 pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
 # Leaderboard file path
