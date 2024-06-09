@@ -26,11 +26,12 @@ ORANGE = (255, 165, 0)
 
 # Set up the display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Pong")
+pygame.display.set_caption("Kian's Powerful, Deadly Pong!")
 
 # Font settings
 font = pygame.font.Font(pygame.font.get_default_font(), 32)  # Larger font and size
 game_over_font = pygame.font.Font(pygame.font.get_default_font(), 144)  # Larger font for game over text
+pause_font = pygame.font.Font(pygame.font.get_default_font(), 72)  # Font for pause message
 
 # ASCII Art for the name "Kian"
 ascii_kian = """
@@ -58,29 +59,17 @@ POWERUPS = ["Rocket", "Explosion", "Double Ball", "Slowdown", "Bouncewall"]
 
 # Create paddle texture
 def create_paddle_texture(width, height):
-    # Create a surface for the paddle texture
     paddle_surface = pygame.Surface((width, height))
-    
-    # Fill with a base color
     paddle_surface.fill(WHITE)
-    
-    # Draw stripes on the paddle
     for i in range(0, height, 20):
         pygame.draw.line(paddle_surface, BLACK, (0, i), (width, i), 4)
-    
     return paddle_surface
 
 # Create ball texture
 def create_ball_texture(radius):
-    # Create a surface for the ball texture
     ball_surface = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
-    
-    # Draw a filled circle
     pygame.draw.circle(ball_surface, WHITE, (radius, radius), radius)
-    
-    # Add a border
     pygame.draw.circle(ball_surface, BLACK, (radius, radius), radius, 4)
-    
     return ball_surface
 
 # Create power-up texture
@@ -140,23 +129,23 @@ bouncewall_timer = 0
 slowdown_timer = 0
 powerup_active = None
 
+# Hide system cursor and grab the mouse cursor
+pygame.mouse.set_visible(False)
+pygame.event.set_grab(True)
+
 def add_ball():
-    # New ball at the center with random initial direction
     ball_speed_x, ball_speed_y = 14, 14
     new_ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, BALL_RADIUS * 2, BALL_RADIUS * 2)
     balls.append({"rect": new_ball, "speed_x": ball_speed_x, "speed_y": ball_speed_y})
 
-# Initially start with one ball - optional
-# add_ball()
-
 def move_paddle_scroll(scroll_amount):
     paddle.y += scroll_amount * paddle_speed
-    paddle.clamp_ip(screen.get_rect())  # Keep the paddle within the screen boundaries
+    paddle.clamp_ip(screen.get_rect())
 
 def move_paddle_mouse():
     mouse_y = pygame.mouse.get_pos()[1]
     paddle.y = mouse_y - PADDLE_HEIGHT // 2
-    paddle.clamp_ip(screen.get_rect())  # Keep the paddle within the screen boundaries
+    paddle.clamp_ip(screen.get_rect())
 
 def move_balls():
     global lives, score
@@ -175,7 +164,6 @@ def move_balls():
             offset = (ball["rect"].centery - paddle.centery) / (PADDLE_HEIGHT // 2)
             ball["speed_y"] += offset * 10
             hit_sound.play()
-            # Chance to spawn power-up
             if random.random() < 0.2:
                 spawn_powerup()
         if ball["rect"].right >= WIDTH:
@@ -187,7 +175,7 @@ def move_balls():
 
 def move_powerups():
     for powerup in powerups[:]:
-        powerup["rect"].y += 7  # Powerup falling speed
+        powerup["rect"].y += 7
         if powerup["rect"].top > HEIGHT:
             powerups.remove(powerup)
 
@@ -197,19 +185,15 @@ def animate_powerup(powerup):
             "scale": 1,
             "direction": 1
         }
-
     scale = powerup["animation"]["scale"]
     direction = powerup["animation"]["direction"]
-
     if scale >= 1.2:
         direction = -1
     elif scale <= 1:
         direction = 1
-
     scale += direction * 0.02
     powerup["animation"]["scale"] = scale
     powerup["animation"]["direction"] = direction
-
     return pygame.transform.scale(powerup_texture, (int(POWERUP_SIZE * scale), int(POWERUP_SIZE * scale)))
 
 def spawn_powerup():
@@ -247,8 +231,6 @@ def use_powerup():
 def rocket_powerup():
     global balls, score
     laser_sound.play()
-    
-    # Draw laser beam animation
     beam_height = 20
     beam_color1 = YELLOW
     beam_color2 = BLUE
@@ -261,8 +243,6 @@ def rocket_powerup():
         pygame.display.flip()
         pygame.time.delay(50)
         beam_color1, beam_color2 = beam_color2, beam_color1
-
-    # Remove balls hit by the laser
     for ball in balls[:]:
         if paddle.top <= ball["rect"].centery <= paddle.bottom:
             score += 1
@@ -337,8 +317,6 @@ def draw(y_offset):
         screen.blit(animated_texture, (powerup["rect"].x, powerup["rect"].y, animated_texture.get_width(), animated_texture.get_height()))
     draw_stored_powerups(y_offset + 60)
     draw_net()
-
-    # Display countdown timer for active power-up
     if powerup_active:
         if powerup_active == "Bouncewall":
             timer_text = f"Bouncewall: {bouncewall_timer} seconds"
@@ -346,7 +324,6 @@ def draw(y_offset):
             timer_text = f"Slowdown: {slowdown_timer} seconds"
         timer_surface = font.render(timer_text, True, WHITE)
         screen.blit(timer_surface, (WIDTH // 2 - timer_surface.get_width() // 2, y_offset + 80))
-
     pygame.display.flip()
 
 def draw_game_elements(y_offset):
@@ -463,17 +440,18 @@ def game_over_screen():
     screen.fill(BLACK)
     display_leaderboard()
 
-    restart_text = "Press R to Restart"
-    restart_surface = font.render(restart_text, True, WHITE)
+    quit_restart_text = "Quit Y/N?"
+    quit_restart_surface = font.render(quit_restart_text, True, WHITE)
     screen.blit(
-        restart_surface,
+        quit_restart_surface,
         (
-            WIDTH // 2 - restart_surface.get_width() // 2,
-            HEIGHT // 2 - restart_surface.get_height() // 2 + 200,
+            WIDTH // 2 - quit_restart_surface.get_width() // 2,
+            HEIGHT // 2 - quit_restart_surface.get_height() // 2 + 200,
         ),
     )
 
     pygame.display.flip()
+    return "quit_check"
 
 def control_selection_screen():
     screen.fill(BLACK)
@@ -501,6 +479,19 @@ def select_control_method():
                     control_method = "mouse"
                     control_selected = True
 
+def pause_screen():
+    screen.fill(BLACK)
+    pause_text = "Quit Y/N?"
+    pause_surface = pause_font.render(pause_text, True, WHITE)
+    screen.blit(
+        pause_surface,
+        (
+            WIDTH // 2 - pause_surface.get_width() // 2,
+            HEIGHT // 2 - pause_surface.get_height() // 2,
+        ),
+    )
+    pygame.display.flip()
+
 # Load assets at the start of the game
 load_assets()
 
@@ -511,6 +502,7 @@ select_control_method()
 # Game loop
 running = True
 game_over = False
+paused = False
 name_captured = False
 clock = pygame.time.Clock()
 last_update = pygame.time.get_ticks()
@@ -529,7 +521,7 @@ while running:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and not game_over:
+            if event.key == pygame.K_SPACE and not game_over and not paused:
                 add_ball()
             elif event.key == pygame.K_r and game_over:
                 game_over = False
@@ -542,9 +534,13 @@ while running:
                 add_ball()
             elif event.key == pygame.K_l and game_over:
                 display_leaderboard()
-        elif event.type == pygame.MOUSEWHEEL and control_method == "scroll" and not game_over:
+            elif event.key == pygame.K_ESCAPE and not game_over:
+                paused = True
+                pygame.event.set_grab(False)
+                pause_screen()
+        elif event.type == pygame.MOUSEWHEEL and control_method == "scroll" and not game_over and not paused:
             move_paddle_scroll(event.y)
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN and not paused:
             if event.button == 1 and not game_over:
                 claim_powerup(event.pos)
             elif event.button == 3 and not game_over:
@@ -553,11 +549,38 @@ while running:
             reset_speeds()
         elif event.type == pygame.USEREVENT + 1:
             reset_paddle()
+    
+    if paused:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_y:
+                    pygame.quit()
+                    sys.exit()
+                elif event.key == pygame.K_n:
+                    paused = False
+                    pygame.event.set_grab(True)
 
     if game_over and not name_captured:
-        game_over_screen()
-        name_captured = True
-    elif not game_over:
+        state = game_over_screen()
+        if state == "quit_check":
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_y:
+                            pygame.quit()
+                            sys.exit()
+                        elif event.key == pygame.K_n:
+                            game_over = False
+                            name_captured = False
+                            score = 0
+                            lives = 10
+                            balls.clear()
+                            powerups.clear()
+                            stored_powerups.clear()
+                            add_ball()
+                            pygame.event.set_grab(True)
+                            break
+    elif not game_over and not paused:
         if control_method == "mouse":
             move_paddle_mouse()
         move_balls()
