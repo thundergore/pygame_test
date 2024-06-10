@@ -112,3 +112,8 @@ Laser and explosion score points for balls destroyed.
 
 A combo to try - if you get a bouncewall and an explosion, trigger bouncewall and spam `space` to launch looooots of balls. As the timer runs out on bouncewall trigger explosion to clear the screen. 
 
+## Credits
+
+Chat GPT used a lot to get this out fast (most of the readme is chat gpt) - this is nothing professional :D
+
+https://freesound.org <- used for the sounds. Great site.
