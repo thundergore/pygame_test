@@ -4,6 +4,9 @@ import os
 import json
 import random
 
+# Change working directory to the directory of the script
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # Initialize Pygame and mixer
 pygame.init()
 pygame.mixer.init()
@@ -217,7 +220,7 @@ def spawn_powerup():
 def claim_powerup(mouse_pos):
     for powerup in powerups:
         if powerup["rect"].collidepoint(mouse_pos):
-            if len(stored_powerups) < 2:
+            if len(stored_powerups) < 3:
                 stored_powerups.append(powerup["type"])
                 powerup_claim_sound.play()
             powerups.remove(powerup)
