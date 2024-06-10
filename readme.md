@@ -53,8 +53,9 @@ Ensure you have Python 3 installed. Then, install Pygame using pip:
 
 Run the game:
 ```bash
-python main.py
+python pong.py
 ```
+The original script - main.py and the directory structure is a work in progress 
 
 Select your control method:
 
