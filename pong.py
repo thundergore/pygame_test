@@ -220,7 +220,7 @@ def spawn_powerup():
 def claim_powerup(mouse_pos):
     for powerup in powerups:
         if powerup["rect"].collidepoint(mouse_pos):
-            if len(stored_powerups) < 3:
+            if len(stored_powerups) < 5:
                 stored_powerups.append(powerup["type"])
                 powerup_claim_sound.play()
             powerups.remove(powerup)
