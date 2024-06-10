@@ -86,7 +86,7 @@ Power-ups are generated with a 20% chance when the ball hits the paddle.
 
 Power-ups include:
 ```
-[Rocket]: Fires a laser that destroys all balls in its path.
+[Laser]: Fires a laser beam that destroys all balls in its path.
 [Explosion]: Clears all balls on the screen.
 [Double Ball]: Doubles the number of balls for 5 seconds.
 [Slowdown]: Slows down the game speed by 50% for 10 seconds.
