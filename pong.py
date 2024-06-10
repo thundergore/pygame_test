@@ -4,6 +4,9 @@ import os
 import json
 import random
 
+# Change working directory to the directory of the script
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # Initialize Pygame and mixer
 pygame.init()
 pygame.mixer.init()
@@ -12,7 +15,7 @@ pygame.mixer.init()
 WIDTH, HEIGHT = 1920, 1080
 PADDLE_WIDTH, PADDLE_HEIGHT = 30, 180
 BALL_RADIUS = 14
-POWERUP_SIZE = 50
+POWERUP_SIZE = 40
 NET_SIZE = 40
 # Colors
 WHITE = (255, 255, 255)
@@ -41,16 +44,16 @@ K I A N ' S  P O W E R F U L ,  D E A D L Y   P O N G! ! !
 """
 
 # Load sounds
-hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
-score_sound = pygame.mixer.Sound("sound/score_sound.wav")
-game_over_sound = pygame.mixer.Sound("sound/game_over_sound.wav")
-powerup_spawn_sound = pygame.mixer.Sound("sound/powerup_spawn.wav")
-powerup_claim_sound = pygame.mixer.Sound("sound/powerup_claim.wav")
-explosion_sound = pygame.mixer.Sound("sound/explosion_sound.wav")
-laser_sound = pygame.mixer.Sound("sound/laser_sound.wav")
+hit_sound = pygame.mixer.Sound("resources/hit_sound.wav")
+score_sound = pygame.mixer.Sound("resources/score_sound.wav")
+game_over_sound = pygame.mixer.Sound("resources/game_over_sound.wav")
+powerup_spawn_sound = pygame.mixer.Sound("resources/powerup_spawn.wav")
+powerup_claim_sound = pygame.mixer.Sound("resources/powerup_claim.wav")
+explosion_sound = pygame.mixer.Sound("resources/explosion_sound.wav")
+laser_sound = pygame.mixer.Sound("resources/laser_sound.wav")
 
 # Load background music
-pygame.mixer.music.load("sound/background_music.wav")
+pygame.mixer.music.load("resources/background_music.wav")
 pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
 # Leaderboard file path
