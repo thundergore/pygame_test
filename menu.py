@@ -6,7 +6,7 @@ import os
 def start_game():
     # Replace 'main.py' with the path to your game script if it's in a different directory
     try:
-        subprocess.Popen(["python", "pong.py"])
+        subprocess.Popen(["python", "/Users/craig.turner@schibsted.com/Development/pygame_test/pong.py"])
     except Exception as e:
         messagebox.showerror("Error", f"Failed to start the game: {e}")
 
