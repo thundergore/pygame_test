@@ -60,13 +60,14 @@ pygame.mixer.music.play(-1)  # Loop the music indefinitely
 LEADERBOARD_FILE = "leaderboard.json"
 
 # Power-up types
-POWERUPS = ["Laser", "Explosion", "Double Ball", "Slowdown", "Bouncewall"]
+POWERUPS = ["Laser", "Explosion", "Double Ball", "Slowdown", "Bouncewall", "Big Ball"]
 POWERUP_LETTERS = {
     "Laser": "L",
     "Explosion": "E",
     "Double Ball": "D",
     "Slowdown": "S",
-    "Bouncewall": "B"
+    "Bouncewall": "B",
+    "Big Ball": "G"
 }
 
 # Create paddle texture
@@ -148,7 +149,7 @@ pygame.event.set_grab(True)
 def add_ball():
     ball_speed_x, ball_speed_y = 14, 14
     new_ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, BALL_RADIUS * 2, BALL_RADIUS * 2)
-    balls.append({"rect": new_ball, "speed_x": ball_speed_x, "speed_y": ball_speed_y})
+    balls.append({"rect": new_ball, "speed_x": ball_speed_x, "speed_y": ball_speed_y, "is_big": False})
 
 def move_paddle_scroll(scroll_amount):
     paddle.y += scroll_amount * paddle_speed
@@ -169,7 +170,7 @@ def move_balls():
             hit_sound.play()
         if ball["rect"].left <= 0:
             ball["speed_x"] *= -1
-            score += 1
+            score += 2 if ball["is_big"] else 1
             score_sound.play()
         if ball["rect"].colliderect(paddle):
             ball["speed_x"] *= -1
@@ -239,6 +240,8 @@ def use_powerup():
             slowdown_powerup()
         elif active_powerup == "Bouncewall":
             bouncewall_powerup()
+        elif active_powerup == "Big Ball":
+            big_ball_powerup()
 
 def laser_powerup():
     global balls, score
@@ -263,13 +266,27 @@ def laser_powerup():
             draw_explosion(ball_pos)
 
 def draw_explosion(pos):
-    explosion_text = "BOOM!"
-    for _ in range(10):  # Display explosion for a short duration
+    explosion_ascii_art = """
+      *    *    
+     *      *   
+    *  *  *  * 
+     *      *  
+      *    *   
+    """
+    lines = explosion_ascii_art.strip().split('\n')
+    font_size = 24  # Adjust font size as necessary
+    explosion_font = pygame.font.Font(pygame.font.get_default_font(), font_size)
+    
+    for _ in range(5):  # Display explosion for a short duration
         screen.fill(BLACK)
         y_offset = render_ascii_art()
         draw_game_elements(y_offset)
-        explosion_surface = explosion_font.render(explosion_text, True, random.choice([RED, YELLOW]))
-        screen.blit(explosion_surface, pos)
+        
+        # Render each line of the ASCII art
+        for i, line in enumerate(lines):
+            explosion_surface = explosion_font.render(line, True, random.choice([RED, YELLOW]))
+            screen.blit(explosion_surface, (pos[0], pos[1] + i * font_size))
+        
         pygame.display.flip()
         pygame.time.delay(100)
 
@@ -281,17 +298,17 @@ def explosion_powerup():
     explosion_animation()
 
 def explosion_animation():
-    explosion_duration = 30
+    explosion_duration = 15  # Shorter duration for the full screen flash
     for i in range(explosion_duration):
         screen.fill(RED if i % 2 == 0 else ORANGE)
         pygame.display.flip()
-        pygame.time.delay(100)  # Slower flashing with 100ms delay
+        pygame.time.delay(50)  # Faster flashing with 50ms delay
 
 def double_ball_powerup():
     new_balls = []
     for ball in balls:
         new_ball = ball["rect"].copy()
-        new_balls.append({"rect": new_ball, "speed_x": -ball["speed_x"], "speed_y": -ball["speed_y"]})
+        new_balls.append({"rect": new_ball, "speed_x": -ball["speed_x"], "speed_y": -ball["speed_y"], "is_big": ball["is_big"]})
     balls.extend(new_balls)
 
 def slowdown_powerup():
@@ -311,6 +328,12 @@ def bouncewall_powerup():
     bouncewall_timer = 10  # 10 seconds
     powerup_active = "Bouncewall"
     pygame.time.set_timer(pygame.USEREVENT + 1, 10000)  # Reset after 10 seconds
+
+def big_ball_powerup():
+    if balls:
+        random_ball = random.choice(balls)
+        random_ball["rect"].inflate_ip(random_ball["rect"].width, random_ball["rect"].height)  # Double the size of the ball
+        random_ball["is_big"] = True
 
 def reset_speeds():
     global powerup_active
@@ -338,6 +361,7 @@ def draw(y_offset):
     screen.blit(lives_surface, (WIDTH - lives_surface.get_width() - 20, y_offset + 20))
     screen.blit(paddle_texture, paddle.topleft)
     for ball in balls:
+        ball_texture = create_ball_texture(ball["rect"].width // 2)
         screen.blit(ball_texture, ball["rect"].topleft)
     for powerup in powerups:
         animated_texture = animate_powerup(powerup)
@@ -369,6 +393,7 @@ def draw_game_elements(y_offset):
     screen.blit(lives_surface, (WIDTH - lives_surface.get_width() - 20, y_offset + 20))
     screen.blit(paddle_texture, paddle.topleft)
     for ball in balls:
+        ball_texture = create_ball_texture(ball["rect"].width // 2)
         screen.blit(ball_texture, ball["rect"].topleft)
     for powerup in powerups:
         animated_texture = animate_powerup(powerup)
